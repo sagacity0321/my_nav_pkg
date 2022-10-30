@@ -26,9 +26,9 @@ class NavCommanderNode:
         self.goal = MoveBaseGoal()
         self.goal.target_pose.header.frame_id = "map"
 
-        self.update_init_pose(0.0, 0.0, -0.5)
+        self.update_init_pose(0.0, 0.0, 0.0)
         self.pub_init_pose.publish(self.init_pose)
-        self.send_goal(1.3,3.5,0.0)
+        self.send_goal(2.5,-0.5,0.0)
         wait = self.client.wait_for_result()
         if not wait:
             print('Error')

@@ -6,7 +6,7 @@ import actionlib
 from geometry_msgs.msg import PoseWithCovarianceStamped, Twist
 from tf.transformations import quaternion_from_euler
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-from darknet_ros_msgs.msg import BoundingBoxes 
+# from darknet_ros_msgs.msg import BoundingBoxes 
 
 # class define
 class NavCommanderNode:

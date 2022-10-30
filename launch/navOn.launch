@@ -1,0 +1,4 @@
+<launch>
+  <node name="nav_commander" pkg="my_nav_pkg" type="nav_commander.py">
+  </node>
+</launch>

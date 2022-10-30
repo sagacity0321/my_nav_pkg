@@ -46,7 +46,7 @@ class NavCommanderNode:
         # self.pub_cmd.publish(self.new_bb)
 
         # To the second goal
-        self.send_goal(1.5,2.9,0.0)
+        self.send_goal(1.8,2.9,0.0)
         wait = self.client.wait_for_result()
         if not wait:
             print('Error')

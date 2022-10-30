@@ -28,12 +28,15 @@ class NavCommanderNode:
 
         self.update_init_pose(0.0, 0.0, 0.0)
         self.pub_init_pose.publish(self.init_pose)
-        self.send_goal(2.5,-0.5,0.0)
+        self.send_goal(1.3,3.5,0.0)
         wait = self.client.wait_for_result()
         if not wait:
             print('Error')
         else:
             print(self.client.get_result())
+
+        # rospy.Subscriber('darknet_ros/bounding_boxes', BoundingBoxes, new_bb, queue_size=10)
+
 
         self.send_goal(0.0,0.0,0.0)
         wait = self.client.wait_for_result()
@@ -67,7 +70,7 @@ class NavCommanderNode:
     
     def new_bb(self, bb_msg):
         for box in bb_msg.bounding_boxes:
-            if box.Class == 'clock':
+            if box.Class == 'bottle':
                 self.x = (box.xmin + box.xmax)/2
                 self.y = (box.ymin + box.ymax)/2
                 self.vx = 0.0

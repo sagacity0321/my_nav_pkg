@@ -133,9 +133,6 @@ catkin_package(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  nodes/message_publisher.py
-  nodes/message_subscriber.py
-  nodes/move_action_client.py
   nodes/nav_commander.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

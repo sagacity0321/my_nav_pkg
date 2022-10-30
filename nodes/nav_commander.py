@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import sys
 import rospy
 import actionlib
 
@@ -9,10 +8,15 @@ from tf.transformations import quaternion_from_euler
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 from darknet_ros_msgs.msg import BoundingBoxes 
 
+# class define
 class NavCommanderNode:
+    
+    # NavCommanderNode Constructor
     def __init__(self):
         rospy.init_node("nav_commander")
         self.pub_init_pose = rospy.Publisher("initialpose", PoseWithCovarianceStamped, queue_size=10)
+        self.sub_cmd = rospy.Subscriber('my_nav_pkg/msg', BoundingBoxes, self.new_bb, queue_size=10)
+        self.pub_cmd = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
         self.client.wait_for_server()
 
@@ -26,8 +30,11 @@ class NavCommanderNode:
         self.goal = MoveBaseGoal()
         self.goal.target_pose.header.frame_id = "map"
 
+        # Initialize this pose
         self.update_init_pose(0.0, 0.0, 0.0)
         self.pub_init_pose.publish(self.init_pose)
+
+        # To the first goal
         self.send_goal(1.3,3.5,0.0)
         wait = self.client.wait_for_result()
         if not wait:
@@ -35,9 +42,18 @@ class NavCommanderNode:
         else:
             print(self.client.get_result())
 
-        # rospy.Subscriber('darknet_ros/bounding_boxes', BoundingBoxes, new_bb, queue_size=10)
+        # To the second goal
+        self.send_goal(1.5,2.9,0.0)
+        wait = self.client.wait_for_result()
+        if not wait:
+            print('Error')
+        else:
+            print(self.client.get_result())
 
+        self.pub_cmd.publish(self.new_bb)
+        
 
+        # Return to the init pose
         self.send_goal(0.0,0.0,0.0)
         wait = self.client.wait_for_result()
         if not wait:
@@ -45,7 +61,7 @@ class NavCommanderNode:
         else:
             print(self.client.get_result())
 
-    
+    # Define init pose
     def update_init_pose(self, x, y, theta):
         self.init_pose.header.stamp = rospy.Time.now()
         self.init_pose.pose.pose.position.x = x
@@ -57,6 +73,7 @@ class NavCommanderNode:
         self.init_pose.pose.pose.orientation.z = q[2]
         self.init_pose.pose.pose.orientation.w = q[3]
 
+    # Define goal for moving
     def send_goal(self,x,y,theta):
         self.goal.target_pose.header.stamp = rospy.Time.now()
         self.goal.target_pose.pose.position.x = x
@@ -68,6 +85,7 @@ class NavCommanderNode:
         self.goal.target_pose.pose.orientation.w=q[3]
         self.client.send_goal(self.goal)
     
+    # Define identify something
     def new_bb(self, bb_msg):
         for box in bb_msg.bounding_boxes:
             if box.Class == 'bottle':
@@ -84,21 +102,24 @@ class NavCommanderNode:
                 else:
                     self.vx = 0.1
                     self.vw = 0.0
-                self.twist = self.Twist()
+                self.twist = Twist()
                 self.twist.linear.x = self.vx
                 self.twist.angular.z = self.vw
-                self.pub_cmd.publish(self.wist)
-            
+                self.pub_cmd.publish(self.twist)
 
 
+    # Define main
     def main(self):
+        # Repeat
         rospy.spin()
 
-
+# Define main
 if __name__== '__main__':
     try:
         rospy.init_node('nav_commander')
-        node = NavCommanderNode()
-        node.main()
+        node = NavCommanderNode() # Create NavcommanderNode for node
+        node.main() # Excution main
+    
+    # Caused rospy error
     except rospy.ROSInterruptException:
         pass
